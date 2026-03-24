@@ -1,0 +1,37 @@
+package Scheduler;
+
+import Servicio.FuenteEstatica;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+@Component
+public class EstaticaScheduler {
+
+    private final FuenteEstatica fuenteEstatica;
+    @Autowired
+    public EstaticaScheduler(FuenteEstatica fuenteEstatica) {
+        this.fuenteEstatica = fuenteEstatica;
+    }
+    @PostConstruct
+    public void ejecutarAlIniciar() {
+        try {
+            fuenteEstatica.cargarHechos();
+        }
+        catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+        @Scheduled(cron = "0 0 4 * * ?")
+
+    public void actualizarHechos() {
+        System.out.println("Actualizando hechos...");
+        try {
+            fuenteEstatica.cargarHechos();
+        }
+        catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+}

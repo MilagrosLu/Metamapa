@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/base :: head (title='Crear Colección - Metamapa')}">
+    <title>Crear Colección</title>
+</head>
+
+<body class="bg-primary-100 dark:bg-gray-900 flex flex-col min-h-screen transition-colors duration-300">
+    <div th:replace="~{layout/base :: header}"></div>
+
+    <main class="container mx-auto px-6 py-8 flex-grow">
+        <div
+            class="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-primary-200 dark:border-gray-700 p-8 transition-colors">
+            <h1 class="text-3xl font-bold text-primary-900 dark:text-primary-200 mb-6">Crear Colección</h1>
+
+            <div th:if="${successMessage}"
+                class="p-4 rounded-xl border flex items-start gap-3 bg-accent-50 dark:bg-accent-900/30 border-accent-200 dark:border-accent-700 text-accent-800 dark:text-accent-300 mb-6"
+                role="alert">
+                <svg class="w-5 h-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span th:text="${successMessage}"></span>
+            </div>
+
+            <div th:if="${errorMessage}"
+                class="p-4 rounded-xl border flex items-start gap-3 bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700 text-red-800 dark:text-red-300 mb-6"
+                role="alert">
+                <svg class="w-5 h-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                </svg>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <form id="crearColeccionForm" class="space-y-4" th:action="@{/admin/crear-coleccion}"
+                th:object="${coleccionForm}" method="POST">
+
+
+                <div>
+                    <label for="titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Título
+                        <span class="text-red-500">*</span></label>
+                    <input type="text" id="titulo" th:field="*{titulo}" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300" />
+                    <span id="titulo-error" class="text-red-500 text-xs mt-1 hidden">Este campo es obligatorio</span>
+                </div>
+                <!-- Codigo comentado eliminado para limpieza -->
+                <div>
+                    <label for="descripcion"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Descripción <span
+                            class="text-red-500">*</span></label>
+                    <textarea id="descripcion" th:field="*{descripcion}" rows="3" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300"></textarea>
+                    <span id="descripcion-error" class="text-red-500 text-xs mt-1 hidden">Este campo es
+                        obligatorio</span>
+                </div>
+
+                <div>
+                    <label for="criterioConsenso"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Criterio de
+                        Consenso</label>
+                    <select id="criterioConsenso" th:field="*{consenso}"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300">
+                        <option value="">Ninguna</option>
+                        <option value="MAYORIA_SIMPLE">Mayoría simple</option>
+                        <option value="ABSOLUTA">Absoluta</option>
+                        <option value="MULTIPLES_MENCIONES">Multiples Menciones</option>
+                    </select>
+                </div>
+
+                <fieldset class="border-t border-gray-200 dark:border-gray-700 pt-5">
+                    <legend class="text-base font-medium text-gray-900 dark:text-gray-100 mb-2">Criterio de Pertenencia
+                    </legend>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                        Defina las reglas para que los hechos pertenezcan a esta colección. Complete al menos un campo.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        <div>
+                            <label for="criterioTitulo"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Título
+                                contiene</label>
+                            <input type="text" id="criterioTitulo" th:field="*{criterio.titulo}"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300" />
+                        </div>
+
+                        <div>
+                            <label for="criterioCategoria"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Categoría
+                                es</label>
+                            <select id="criterioCategoria" th:field="*{criterio.categoria}"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300">
+                                <option value="">Cualquiera</option>
+                                <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat}"></option>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="searchDireccion"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar
+                                dirección</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="searchDireccion" placeholder="Ej: Rosario, Santa Fe, Argentina"
+                                    class="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300" />
+                                <button type="button" id="buscarUbicacion"
+                                    class="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-medium rounded-xl shadow-md hover:from-primary-700 hover:to-primary-800 hover:shadow-lg transition-all duration-300">Buscar</button>
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Ingrese una dirección o ciudad para
+                                autocompletar país, provincia y localidad.</p>
+                        </div>
+
+                        <div>
+                            <label for="criterioPais"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">País</label>
+                            <input type="text" id="criterioPais" th:field="*{criterio.pais}"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300" />
+                        </div>
+                        <div>
+                            <label for="criterioProvincia"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Provincia</label>
+                            <input type="text" id="criterioProvincia" th:field="*{criterio.provincia}"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300" />
+                        </div>
+                        <div>
+                            <label for="criterioLocalidad"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Localidad</label>
+                            <input type="text" id="criterioLocalidad" th:field="*{criterio.localidad}"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300" />
+                        </div>
+
+                        <div>
+                            <label for="criterioOrigen"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Origen
+                                Carga</label>
+                            <select id="criterioOrigen" th:field="*{criterio.origen_carga}"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300" />
+                            
+                                <option value="">Cualquiera</option>
+
+                                <option value="FUENTE_DINAMICA">Usuario</option>
+                                <option value="FUENTE_ESTATICA">Archivo ONG</option>
+                                <option value="FUENTE_PROXY">Servicio Externo</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="criterioMultimedia"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tiene
+                                Multimedia</label>
+                            <select id="criterioMultimedia" th:field="*{criterio.contenido_multimedia}"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300">
+                                <option value="">Indistinto</option>
+                                <option value="true">Sí</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha de
+                                Carga (Rango)</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="criterioFechaCargaDesde"
+                                        class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Desde</label>
+                                    <input type="datetime-local" id="criterioFechaCargaDesde"
+                                        th:field="*{criterio.fechaCargaDesde}"
+                                        class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all" />
+                                </div>
+                                <div>
+                                    <label for="criterioFechaCargaHasta"
+                                        class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Hasta</label>
+                                    <input type="datetime-local" id="criterioFechaCargaHasta"
+                                        th:field="*{criterio.fechaCargaHasta}"
+                                        class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha de
+                                Acontecimiento (Rango)</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="criterioFechaAconDesde"
+                                        class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Desde</label>
+                                    <input type="datetime-local" id="criterioFechaAconDesde"
+                                        th:field="*{criterio.fechaAcontecimientoDesde}"
+                                        class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all" />
+                                </div>
+                                <div>
+                                    <label for="criterioFechaAconHasta"
+                                        class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Hasta</label>
+                                    <input type="datetime-local" id="criterioFechaAconHasta"
+                                        th:field="*{criterio.fechaAcontecimientoHasta}"
+                                        class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="flex justify-end items-center gap-4 pt-4">
+                    <a th:href="@{/admin(tab='collections')}"
+                        class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">
+                        Cancelar
+                    </a>
+                    <button type="submit"
+                        class="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl shadow-md hover:from-primary-700 hover:to-primary-800 hover:shadow-lg transition-all duration-300">
+                        Crear Colección
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <div th:replace="~{layout/base :: footer}"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("crearColeccionForm");
+            const requiredFields = [
+                { id: 'titulo', errorId: 'titulo-error' },
+                { id: 'descripcion', errorId: 'descripcion-error' }
+            ];
+
+            function showError(errorElement, show) {
+                if (show) {
+                    errorElement.classList.remove('hidden');
+                } else {
+                    errorElement.classList.add('hidden');
+                }
+            }
+
+            function setFieldInvalid(field, isInvalid) {
+                if (isInvalid) {
+                    field.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+                    field.classList.remove('border-gray-300', 'dark:border-gray-600');
+                } else {
+                    field.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+                    field.classList.add('border-gray-300', 'dark:border-gray-600');
+                }
+            }
+
+            function validateField(fieldConfig) {
+                const field = document.getElementById(fieldConfig.id);
+                const errorElement = document.getElementById(fieldConfig.errorId);
+                const isEmpty = !field.value.trim();
+
+                showError(errorElement, isEmpty);
+                setFieldInvalid(field, isEmpty);
+
+                return !isEmpty;
+            }
+
+            requiredFields.forEach(fieldConfig => {
+                const field = document.getElementById(fieldConfig.id);
+                field.addEventListener('blur', () => validateField(fieldConfig));
+                field.addEventListener('input', () => {
+                    const errorElement = document.getElementById(fieldConfig.errorId);
+                    if (field.value.trim()) {
+                        showError(errorElement, false);
+                        setFieldInvalid(field, false);
+                    }
+                });
+            });
+
+            form.addEventListener('submit', function (e) {
+                let isValid = true;
+
+                requiredFields.forEach(fieldConfig => {
+                    if (!validateField(fieldConfig)) {
+                        isValid = false;
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    // Hacer scroll al primer campo con error
+                    const firstError = document.querySelector('.border-red-500');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        firstError.focus();
+                    }
+                }
+            });
+        })
+
+
+        const buscarBtn = document.getElementById("buscarUbicacion");
+        const inputBuscar = document.getElementById("searchDireccion");
+
+        if (buscarBtn && inputBuscar) {
+            buscarBtn.addEventListener("click", async () => {
+                const query = inputBuscar.value.trim();
+                if (!query) return alert("Por favor ingrese una dirección o ciudad para buscar.");
+
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+                    const data = await res.json();
+
+                    if (data.length === 0) {
+                        alert("No se encontró la ubicación especificada.");
+                        return;
+                    }
+
+                    const { lat, lon } = data[0];
+
+                    const reverseRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                    const reverseData = await reverseRes.json();
+                    const address = reverseData.address || {};
+
+
+                    const inputLocalidad = document.getElementById('criterioLocalidad');
+                    const inputProvincia = document.getElementById('criterioProvincia');
+                    const inputPais = document.getElementById('criterioPais');
+
+                    if (inputLocalidad) inputLocalidad.value = address.city || address.town || address.village || '';
+                    if (inputProvincia) inputProvincia.value = address.state || '';
+                    if (inputPais) inputPais.value = address.country || '';
+
+                } catch (err) {
+                    console.error("Error en la búsqueda:", err);
+                    alert("Ocurrió un error al buscar la dirección.");
+                }
+            });
+        }
+    </script>
+
+    <div th:replace="~{layout/base :: scripts}"></div>
+</body>
+
+</html>

@@ -1,0 +1,85 @@
+type Query {
+    listarHechos(filtro: HechoFilterInput): PagedHechoResponse
+    listarColecciones: [ColeccionDTO]
+    listarPaises: [String]
+    listarProvincias: [String]
+    listarLocalidades: [String]
+    listarCategorias: [String]
+    obtenerHecho(id: ID!): HechoDTOoutput
+}
+
+input HechoFilterInput {
+    idColeccion: ID
+    contenidoMultimedia: Boolean
+    titulo: String
+    fechaCargaDesde: String
+    fechaCargaHasta: String
+    fechaHechoDesde: String
+    fechaHechoHasta: String
+    categoria: String
+    pais: String
+    provincia: String
+    localidad: String
+    navegacionCurada: Boolean
+    busquedaGeneral: String
+    origenCarga: String
+    size :Int
+    page: Int
+}
+
+type HechoDTOoutput {
+    idHecho: ID
+    idFuente: ID
+    titulo: String
+    descripcion: String
+    contenido: String
+    contenido_multimedia: String
+    categoria: String
+    fechaAcontecimiento: String
+    fechaCarga: String
+    localidad: String
+    provincia: String
+    pais: String
+    latitud: Float
+    longitud: Float
+    usuario: String
+    nombre: String
+    apellido: String
+    fecha_nacimiento: String
+    anonimo: Boolean
+    visible: Boolean
+    origenCarga: String
+}
+
+type ColeccionDTO {
+    coleccionId: ID
+    titulo: String
+    descripcion: String
+    criterio: CriterioDTO
+    hechos: [HechoDTOoutput]
+    consenso: String
+    hechosConsensuados: [HechoDTOoutput]
+}
+
+type CriterioDTO{
+    titulo: String
+    contenido_multimedia: Boolean
+    categoria: String
+    fechaCargaDesde: String
+    fechaCargaHasta: String
+    localidad: String
+    provincia: String
+    pais: String
+    fechaAcontecimientoDesde: String
+    fechaAcontecimientoHasta: String
+    origenCarga: String
+}
+type PagedHechoResponse{
+        content: [HechoDTOoutput]
+        currentPage: Int
+        totalPages: Int
+        totalElements: Int
+        pageSize: Int
+        hasNext: Boolean
+        hasPrevious: Boolean
+}

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/base :: head (title='Crear Hecho - Metamapa')}"></head>
+
+<body class="bg-primary-100 dark:bg-gray-900 flex flex-col min-h-screen transition-colors duration-300">
+    <div th:replace="~{layout/base :: header}"></div>
+
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div
+            class="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-primary-200 dark:border-gray-700 p-8 transition-colors">
+            <h1 class="text-3xl font-bold text-primary-900 dark:text-primary-200 mb-6">Crear Nuevo Hecho</h1>
+
+            <div th:if="${errorMessage}"
+                class="p-4 rounded-xl border flex items-start gap-3 bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700 text-red-800 dark:text-red-300 mb-4"
+                role="alert">
+                <svg class="w-5 h-5 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                </svg>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <form id="crearHechoForm" th:action="@{/crear-hecho}" th:object="${hechoForm}" method="post"
+                enctype="multipart/form-data" class="space-y-4">
+
+                <div>
+                    <label for="titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Título
+                        <span class="text-red-500">*</span></label>
+                    <input type="text" name="titulo" id="titulo" th:field="*{titulo}" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300" />
+                    <span id="titulo-error" class="text-red-500 text-xs mt-1 hidden">Este campo es obligatorio</span>
+                </div>
+
+                <div>
+                    <label for="descripcion"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Descripción <span
+                            class="text-red-500">*</span></label>
+                    <textarea name="descripcion" id="descripcion" th:field="*{descripcion}" rows="2" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300"></textarea>
+                    <span id="descripcion-error" class="text-red-500 text-xs mt-1 hidden">Este campo es
+                        obligatorio</span>
+                </div>
+
+                <div>
+                    <label for="contenidoAdicional"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contenido Adicional
+                        (Opcional)</label>
+                    <textarea name="contenidoAdicional" id="contenidoAdicional" th:field="*{contenidoAdicional}"
+                        rows="4"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="categoria"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Categoría <span
+                                class="text-red-500">*</span></label>
+                        <select name="categoria" id="categoria" th:field="*{categoria}" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300">
+                            <option value="">Selecciona una categoría</option>
+                            <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat}"></option>
+                            <option value="Otra">Otra</option>
+                        </select>
+                        <span id="categoria-error" class="text-red-500 text-xs mt-1 hidden">Este campo es
+                            obligatorio</span>
+                    </div>
+                    <div id="customCategoriaDiv" class="hidden">
+                        <label for="customCategoria"
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nueva
+                            Categoría <span class="text-red-500">*</span></label>
+                        <input type="text" name="customCategoria" id="customCategoria" th:field="*{customCategoria}"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300" />
+                        <span id="customCategoria-error" class="text-red-500 text-xs mt-1 hidden">Debes ingresar una
+                            nueva categoría</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="fechaAcontecimiento"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha del Hecho <span
+                            class="text-red-500">*</span></label>
+                    <input type="datetime-local" name="fechaAcontecimiento" id="fechaAcontecimiento"
+                        th:field="*{fechaAcontecimiento}" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300" />
+                    <span id="fechaAcontecimiento-error" class="text-red-500 text-xs mt-1 hidden">Este campo es
+                        obligatorio</span>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ubicación del
+                        Hecho <span class="text-red-500">*</span></label>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Haz clic en el mapa o busca una dirección
+                        para marcar la ubicación.</p>
+                    <div class="flex gap-2 mb-2">
+                        <input type="text" id="searchInput" placeholder="Buscar dirección..."
+                            class="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-300" />
+                        <button type="button" id="searchBtn"
+                            class="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-medium rounded-xl shadow-md hover:from-primary-700 hover:to-primary-800 hover:shadow-lg transition-all duration-300">Buscar</button>
+                    </div>
+                    <div id="map" class="h-96 w-full rounded-xl border-2 border-gray-200 dark:border-gray-600"></div>
+                    <span id="ubicacion-error" class="text-red-500 text-xs mt-1 hidden">Debes seleccionar una ubicación
+                        en el mapa</span>
+                    <input type="hidden" name="latitud" id="latitud" th:field="*{latitud}" />
+                    <input type="hidden" name="longitud" id="longitud" th:field="*{longitud}" />
+                    <input type="hidden" name="pais" id="pais" th:field="*{pais}" />
+                    <input type="hidden" name="provincia" id="provincia" th:field="*{provincia}" />
+                    <input type="hidden" name="localidad" id="localidad" th:field="*{localidad}" />
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" name="anonimo" id="anonimo" th:field="*{anonimo}"
+                        class="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:bg-gray-700" />
+                    <label for="anonimo" class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Publicar como anónimo
+                    </label>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Si seleccionas esta opción, tu información personal no será visible en el hecho publicado.
+                    </p>
+                </div>
+
+                    <div id="datosPersonalesOptions" class="space-y-3 pl-8 hidden">
+                        <p class="text-sm text-gray-700 dark:text-gray-300 font-medium mb-2">
+                            Selecciona qué información personal deseas mostrar:
+                        </p>
+                        
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" name="mostrarNombre" id="mostrarNombre" th:field="*{mostrarNombre}"
+                                class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:bg-gray-700" />
+                            <label for="mostrarNombre" class="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                                Mostrar nombre
+                            </label>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" name="mostrarApellido" id="mostrarApellido" th:field="*{mostrarApellido}"
+                                class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:bg-gray-700" />
+                            <label for="mostrarApellido" class="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                                Mostrar apellido
+                            </label>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" name="mostrarFechaNacimiento" id="mostrarFechaNacimiento" th:field="*{mostrarFechaNacimiento}"
+                                class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:bg-gray-700" />
+                            <label for="mostrarFechaNacimiento" class="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                                Mostrar fecha de nacimiento
+                            </label>
+                        </div>
+
+                        <p class="text-xs text-gray-500 dark:text-gray-400 italic mt-2">
+                            Nota: Tu nombre de usuario siempre será visible.
+                        </p>
+                    </div>
+
+                <div>
+                    <label for="archivos"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Archivos multimedia
+                        (Imágenes, Videos, Audio)</label>
+                    <input type="file" name="multimediaFile" id="archivos"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary-100 dark:file:bg-primary-900/50 file:text-primary-700 dark:file:text-primary-300 file:font-medium hover:file:bg-primary-200 dark:hover:file:bg-primary-800/50 transition-all duration-300"
+                        accept="image/*,audio/*,video/*" />
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">(Formatos permitidos: JPG, PNG, GIF, MP3,
+                        WAV, MP4, WEBM - Tamaño máximo: 10MB)</p>
+                    <span id="archivos-error" class="text-red-500 text-xs mt-1 hidden"></span>
+                </div>
+
+                <div class="flex justify-end space-x-4 pt-4">
+                    <a th:href="@{/}"
+                        class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">Cancelar</a>
+                    <button type="submit"
+                        class="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-medium rounded-xl shadow-md hover:from-primary-700 hover:to-primary-800 hover:shadow-lg transition-all duration-300">
+                        Crear Hecho
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div th:replace="~{layout/base :: footer}"></div>
+    <div th:replace="~{layout/base :: scripts}"></div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const categoriaSelect = document.getElementById('categoria');
+            const customCategoriaDiv = document.getElementById('customCategoriaDiv');
+            const customCategoriaInput = document.getElementById('customCategoria');
+            const anonimoCheckbox = document.getElementById('anonimo');
+            const datosPersonalesOptions = document.getElementById('datosPersonalesOptions');
+            const mostrarNombreCheckbox = document.getElementById('mostrarNombre');
+            const mostrarApellidoCheckbox = document.getElementById('mostrarApellido');
+            const mostrarFechaNacimientoCheckbox = document.getElementById('mostrarFechaNacimiento');
+            
+             function toggleDatosPersonales() {
+                if (anonimoCheckbox.checked) {
+                    datosPersonalesOptions.classList.add('hidden');
+                    mostrarNombreCheckbox.checked = false;
+                    mostrarApellidoCheckbox.checked = false;
+                    mostrarFechaNacimientoCheckbox.checked = false;
+                } else {
+                    datosPersonalesOptions.classList.remove('hidden');
+                }
+            }
+            
+            toggleDatosPersonales();
+
+            anonimoCheckbox.addEventListener('change', toggleDatosPersonales);
+            
+            categoriaSelect.addEventListener('change', function () {
+                if (this.value === 'Otra') {
+                    customCategoriaDiv.classList.remove('hidden');
+                } else {
+                    customCategoriaDiv.classList.add('hidden');
+                    customCategoriaInput.value = '';
+                }
+            });
+
+
+            const fechaInput = document.getElementById('fechaAcontecimiento');
+            function setMaxDateTime() {
+                const now = new Date();
+                // Formato requerido para datetime-local: YYYY-MM-DDTHH:MM
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const maxDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+                fechaInput.setAttribute('max', maxDateTime);
+            }
+            setMaxDateTime();
+            setInterval(setMaxDateTime, 60000);
+
+
+            const form = document.getElementById('crearHechoForm');
+            const requiredFields = [
+                { id: 'titulo', errorId: 'titulo-error' },
+                { id: 'descripcion', errorId: 'descripcion-error' },
+                { id: 'fechaAcontecimiento', errorId: 'fechaAcontecimiento-error' }
+            ];
+
+            function showError(errorElement, show) {
+                if (show) {
+                    errorElement.classList.remove('hidden');
+                } else {
+                    errorElement.classList.add('hidden');
+                }
+            }
+
+            function setFieldInvalid(field, isInvalid) {
+                if (isInvalid) {
+                    field.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+                    field.classList.remove('border-gray-300', 'dark:border-gray-600');
+                } else {
+                    field.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+                    field.classList.add('border-gray-300', 'dark:border-gray-600');
+                }
+            }
+
+            function validateField(fieldConfig) {
+                const field = document.getElementById(fieldConfig.id);
+                const errorElement = document.getElementById(fieldConfig.errorId);
+                const isEmpty = !field.value.trim();
+
+                showError(errorElement, isEmpty);
+                setFieldInvalid(field, isEmpty);
+
+                return !isEmpty;
+            }
+
+            function validateCategoria() {
+                const categoriaError = document.getElementById('categoria-error');
+                const customCategoriaError = document.getElementById('customCategoria-error');
+                const isOtra = categoriaSelect.value === 'Otra';
+                const categoriaEmpty = !categoriaSelect.value;
+
+                if (categoriaEmpty) {
+                    showError(categoriaError, true);
+                    setFieldInvalid(categoriaSelect, true);
+                    return false;
+                } else {
+                    showError(categoriaError, false);
+                    setFieldInvalid(categoriaSelect, false);
+                }
+
+                if (isOtra && !customCategoriaInput.value.trim()) {
+                    showError(customCategoriaError, true);
+                    setFieldInvalid(customCategoriaInput, true);
+                    return false;
+                } else {
+                    showError(customCategoriaError, false);
+                    setFieldInvalid(customCategoriaInput, false);
+                }
+
+                return true;
+            }
+
+            function validateUbicacion() {
+                const ubicacionError = document.getElementById('ubicacion-error');
+                const latInput = document.getElementById('latitud');
+                const lngInput = document.getElementById('longitud');
+                const mapElement = document.getElementById('map');
+
+                const hasLocation = latInput.value && lngInput.value;
+
+                if (!hasLocation) {
+                    showError(ubicacionError, true);
+                    mapElement.classList.add('border-red-500');
+                    mapElement.classList.remove('border-gray-200', 'dark:border-gray-600');
+                    return false;
+                } else {
+                    showError(ubicacionError, false);
+                    mapElement.classList.remove('border-red-500');
+                    mapElement.classList.add('border-gray-200', 'dark:border-gray-600');
+                    return true;
+                }
+            }
+
+            requiredFields.forEach(fieldConfig => {
+                const field = document.getElementById(fieldConfig.id);
+                field.addEventListener('blur', () => validateField(fieldConfig));
+                field.addEventListener('input', () => {
+                    const errorElement = document.getElementById(fieldConfig.errorId);
+                    if (field.value.trim()) {
+                        showError(errorElement, false);
+                        setFieldInvalid(field, false);
+                    }
+                });
+            });
+
+            categoriaSelect.addEventListener('change', function () {
+                validateCategoria();
+            });
+
+            customCategoriaInput.addEventListener('input', function () {
+                if (categoriaSelect.value === 'Otra' && this.value.trim()) {
+                    const customCategoriaError = document.getElementById('customCategoria-error');
+                    showError(customCategoriaError, false);
+                    setFieldInvalid(this, false);
+                }
+            });
+
+            function validateFileSize() {
+                const fileInput = document.getElementById('archivos');
+                const fileError = document.getElementById('archivos-error');
+                const maxSize = 10 * 1024 * 1024; // 10MB en bytes
+
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    if (file.size > maxSize) {
+                        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                        fileError.textContent = `El archivo es demasiado grande (${sizeMB}MB). El tamaño máximo permitido es 10MB.`;
+                        fileError.classList.remove('hidden');
+                        setFieldInvalid(fileInput, true);
+                        return false;
+                    } else {
+                        fileError.classList.add('hidden');
+                        setFieldInvalid(fileInput, false);
+                    }
+                }
+                return true;
+            }
+
+            document.getElementById('archivos').addEventListener('change', function () {
+                validateFileSize();
+            });
+
+            form.addEventListener('submit', function (e) {
+                let isValid = true;
+
+                requiredFields.forEach(fieldConfig => {
+                    if (!validateField(fieldConfig)) {
+                        isValid = false;
+                    }
+                });
+
+                if (!validateCategoria()) {
+                    isValid = false;
+                }
+
+                if (!validateUbicacion()) {
+                    isValid = false;
+                }
+
+                const fechaValue = new Date(fechaInput.value);
+                const now = new Date();
+                if (fechaValue > now) {
+                    const errorElement = document.getElementById('fechaAcontecimiento-error');
+                    errorElement.textContent = 'No se permite seleccionar fechas u horas futuras';
+                    showError(errorElement, true);
+                    setFieldInvalid(fechaInput, true);
+                    isValid = false;
+                }
+
+                if (!validateFileSize()) {
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    const firstError = document.querySelector('.border-red-500');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        firstError.focus();
+                    }
+                }
+            });
+
+
+            const map = L.map('map').setView([-34.6037, -58.3816], 11);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            let marker;
+            const latInput = document.getElementById('latitud');
+            const lngInput = document.getElementById('longitud');
+            const paisInput = document.getElementById('pais');
+            const provinciaInput = document.getElementById('provincia');
+            const localidadInput = document.getElementById('localidad');
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+
+            function setMarker(lat, lng) {
+                if (marker) map.removeLayer(marker);
+                marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+                latInput.value = lat;
+                lngInput.value = lng;
+                marker.on('dragend', function (e) {
+                    const pos = e.target.getLatLng();
+                    latInput.value = pos.lat;
+                    lngInput.value = pos.lng;
+                    reverseGeocode(pos.lat, pos.lng);
+                });
+            }
+
+            function reverseGeocode(lat, lng) {
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const address = data.address || {};
+                        paisInput.value = address.country || '';
+                        provinciaInput.value = address.state || address.county || '';
+                        localidadInput.value = address.city || address.town || address.village || address.municipality || address.county ||address.suburb ||address.neighbourhood || address.hamlet ||'';
+
+                        searchInput.value = data.display_name || '';
+                    })
+                    .catch(err => console.error('Reverse geocoding error:', err));
+            }
+
+            map.on('click', function (e) {
+                setMarker(e.latlng.lat, e.latlng.lng);
+                reverseGeocode(e.latlng.lat, e.latlng.lng);
+            });
+
+            searchBtn.addEventListener('click', function () {
+                const query = searchInput.value.trim();
+                if (!query) return;
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=ar`)
+                    .then(res => res.json())
+                    .then(results => {
+                        if (results && results.length > 0) {
+                            const r = results[0];
+                            setMarker(r.lat, r.lon);
+                            map.setView([r.lat, r.lon], 14);
+                            reverseGeocode(r.lat, r.lon);
+                        } else {
+                            alert('No se encontró la dirección.');
+                        }
+                    })
+                    .catch(err => console.error('Geocoding error:', err));
+            });
+
+            searchInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
